@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
+import React, { useState } from 'react';
+import TodoList from './components/TodoList';
+import { Todo } from './type';
+
+const App = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTodo, setNewTodo] = useState<string>('');
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>):void => {
+    e.preventDefault()
+    if (newTodo.trim()) {
+      setTodos([...todos, { id: todos.length + 1, text: newTodo, completed: false }]);
+      setNewTodo('');
+    }
+  };
+
+  const handleToggleComplete = (id: number) => {
+    setTodos(todos.map(todo => (todo.id === id ? { ...todo, completed: !todo.completed } : todo)));
+  };
+
+  const handleDeleteTodo = (id: number) => {
+    setTodos(todos.filter(todo => todo.id !== id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='app'>
+      <h1>ToDo App</h1>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor='todo'  >
+          <input value={newTodo} id='todo' onChange={(e) => setNewTodo(e.target.value)} />
+
+        </label>
+        <button type='submit' >Add ToDo</button>
+      </form>
+
+      <TodoList todos={todos} onToggleComplete={handleToggleComplete} onDeleteTodo={handleDeleteTodo} />
     </div>
   );
-}
+};
 
 export default App;
